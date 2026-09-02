@@ -1,11 +1,14 @@
 import {Router} from 'express'
-import { signup, login } from '../controllers/auth.js'
+import { signup, login, me } from '../controllers/auth.js'
+import { errorHandler } from '../error-handler.js'
+import authMiddleware from '../middlewares/auth.js'
 
 
 const authRoutes:Router =  Router()
 
 
-authRoutes.post('/signup', signup)
-authRoutes.post('/login', login)
+authRoutes.post('/signup', errorHandler(signup))
+authRoutes.post('/login', errorHandler(login))
+authRoutes.get('/me', [authMiddleware], errorHandler(me))
 
 export default authRoutes

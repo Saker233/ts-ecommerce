@@ -12,11 +12,11 @@ app.use(express.json())
 
 app.use('/api', rootRouter)
 
-app.use(errorMiddleware)
-
 app.get('/', (req: Request, res: Response) => {
     res.send('Working')
 })
+
+app.use(errorMiddleware)
 
 
 app.listen(PORT, () => {

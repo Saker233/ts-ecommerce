@@ -2,11 +2,11 @@
 
 export class HttpException extends Error {
     message: string;
-    errorCode: any;
+    errorCode: ErrorCode;
     statusCode: number;
-    errors: ErrorCode;
+    errors?: ErrorCode | null;
 
-    constructor(message:string, errorCode: any, statusCode:number, errors:ErrorCode) {
+    constructor(message:string, errorCode: ErrorCode, statusCode:number, errors?: ErrorCode | null) {
         super(message)
         this.message = message
         this.errorCode = errorCode
@@ -21,4 +21,5 @@ export enum ErrorCode {
     INCORRECT_PASSWORD = 401,
     UNPROCESSABLE_ENTITY = 405,
     INTERNAL_EXCEPTION= 500,
+    UNAUTHORIZED = 401,
 }

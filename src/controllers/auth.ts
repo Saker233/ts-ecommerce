@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from "../secrets.js"
 import { BadRequestsException } from "../exceptions/bad-requests.js"
 import { ErrorCode } from "../exceptions/root.js"
+import { NotFoundException } from "../exceptions/not-found.js"
+import { UnauthorizedException } from "../exceptions/unauthorized.js"
 import { UnprocessableEntity } from "../exceptions/validation.js"
 import { signupSchema } from "../schema/users.js"
 
@@ -13,11 +15,11 @@ export const login = async (req: Request, res:Response, next:NextFunction) => {
 
     let user =  await prisma.user.findFirst({where: {email}})
     if(!user) {
-        return next(new BadRequestsException("User Not found!", ErrorCode.USER_NOT_FOUND))
+        throw new NotFoundException("User Not found!")
     }
     const matchPass = compareSync(password, user.password)
     if (!matchPass) {
-        throw Error("Bad Credentials")
+        throw new UnauthorizedException("Bad Credentials", ErrorCode.INCORRECT_PASSWORD)
     }
     const token = jwt.sign(
         {userId: user.id},
@@ -44,4 +46,9 @@ export const signup = async (req:Request, res:Response, next:NextFunction) => {
             }
         })
         res.json(user)
+}
+
+
+export const me = async (req:Request, res:Response) => {
+        res.json(req.user)
 }

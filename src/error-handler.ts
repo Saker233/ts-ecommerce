@@ -1,8 +1,10 @@
 import type {Request, Response, NextFunction} from 'express'
-import { ErrorCode, type HttpException } from "../exceptions/root.ts";
+import { ErrorCode, HttpException } from "./exceptions/root.js";
 import { InternalException } from './exceptions/internal-exception.js';
 
-export const errorHandler = (method: Function) => {
+type Handler = (req: Request, res: Response, next: NextFunction) => unknown | Promise<unknown>
+
+export const errorHandler = (method: Handler) => {
     return async (req: Request, res:Response, next:NextFunction) => {
         try {
             await method(req, res, next)
