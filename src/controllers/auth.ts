@@ -3,13 +3,15 @@ import { prisma } from "../lib/prisma.js"
 import { hashSync, compareSync } from "bcrypt"
 import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from "../secrets.js"
+import { BadRequestsException } from "../exceptions/bad-requests.js"
+import { ErrorCode } from "../exceptions/root.js"
 
 export const login = async (req: Request, res:Response) => {
     const {email, password} =  req.body
 
     let user =  await prisma.user.findFirst({where: {email}})
     if(!user) {
-        throw Error("User Does Not Exist")
+        throw new BadRequestsException("User Not found!", ErrorCode.USER_NOT_FOUND)
     }
     const matchPass = compareSync(password, user.password)
     if (!matchPass) {

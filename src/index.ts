@@ -2,6 +2,7 @@ import express from 'express'
 import type {Express, Request, Response} from 'express'
 import {PORT} from './secrets.js'
 import rootRouter from './routes/index.js'
+import { errorMiddleware } from './middlewares/errors.js'
 
 
 
@@ -11,6 +12,7 @@ app.use(express.json())
 
 app.use('/api', rootRouter)
 
+app.use(errorMiddleware)
 
 app.get('/', (req: Request, res: Response) => {
     res.send('Working')
