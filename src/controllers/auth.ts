@@ -5,6 +5,8 @@ import jwt from 'jsonwebtoken'
 import { JWT_SECRET } from "../secrets.js"
 import { BadRequestsException } from "../exceptions/bad-requests.js"
 import { ErrorCode } from "../exceptions/root.js"
+import { UnprocessableEntity } from "../exceptions/validation.js"
+import { signupSchema } from "../schema/users.js"
 
 export const login = async (req: Request, res:Response, next:NextFunction) => {
     const {email, password} =  req.body
@@ -27,18 +29,19 @@ export const login = async (req: Request, res:Response, next:NextFunction) => {
 }
 
 export const signup = async (req:Request, res:Response, next:NextFunction) => {
-    const {email, password, name} =  req.body
+    signupSchema.parse(req.body)
+        const {email, password, name} =  req.body
 
-    let user =  await prisma.user.findFirst({where: {email}})
-    if (user) {
-        return next(new BadRequestsException("User is Already Exist", ErrorCode.USER_ALREADY_EXIST))
-    }
-    user =  await prisma.user.create({
-        data: {
-            name,
-            email,
-            password: hashSync(password, 10)
+        let user =  await prisma.user.findFirst({where: {email}})
+        if (user) {
+            return next(new BadRequestsException("User is Already Exist", ErrorCode.USER_ALREADY_EXIST))
         }
-    })
-    res.json(user)
+        user =  await prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hashSync(password, 10)
+            }
+        })
+        res.json(user)
 }
