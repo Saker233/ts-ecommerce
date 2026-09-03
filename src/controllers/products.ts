@@ -5,10 +5,11 @@ import { NotFoundException } from "../exceptions/not-found.js";
 import { ErrorCode } from "../exceptions/root.js";
 import { createProductSchema, updateProductSchema } from "../schema/products.js";
 
-const parseId = (raw: string) => {
-    const id = Number(raw)
+const parseId = (raw: string | string[] | undefined) => {
+    const value = Array.isArray(raw) ? raw[0] : raw
+    const id = Number(value)
     if (!Number.isInteger(id) || id <= 0) {
-        throw new BadRequestsException("Invalid product id", ErrorCode.UNPROCESSABLE_ENTITY)
+        throw new BadRequestsException("Invalid product id", ErrorCode.VALIDATION_ERROR)
     }
     return id
 }

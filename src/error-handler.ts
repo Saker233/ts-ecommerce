@@ -1,4 +1,5 @@
 import type {Request, Response, NextFunction} from 'express'
+import { ZodError } from 'zod'
 import { ErrorCode, HttpException } from "./exceptions/root.js";
 import { InternalException } from './exceptions/internal-exception.js';
 
@@ -9,6 +10,9 @@ export const errorHandler = (method: Handler) => {
         try {
             await method(req, res, next)
         } catch(error: any) {
+            if (error instanceof ZodError) {
+                return next(error)
+            }
             let exception: HttpException
             if(error instanceof HttpException) {
                 exception =  error
